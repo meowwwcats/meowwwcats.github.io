@@ -300,7 +300,27 @@ function handleToggle(i) {
     function inputAdj(i, key, val) { routines[i][key] = Math.max(0, parseInt(val) || 0); render(); }
     function updateTotal() { const total = routines.reduce((acc, curr) => acc + curr.currentSec, 0); document.getElementById('total-display').innerText = formatTime(total); }
     function resetProgress() { if(!confirm("초기화할까요?")) return; Object.keys(intervals).forEach(id => clearInterval(intervals[id])); intervals = {}; routines.forEach(r => { r.currentSec = 0; r.completed = false; }); openPanelIdx = null; render(); }
-    function factoryReset() { if(confirm("전체 초기화됩니다.")) { localStorage.clear(); location.reload(); } }
+    function factoryReset() {
+    if (confirm("모든 데이터가 삭제되고 초기 상태로 돌아갑니다. 진행하시겠습니까?")) {
+        // 타이머 중지
+        for (let id in intervals) {
+            clearInterval(intervals[id]);
+        }
+        intervals = {};
+
+        // 스토리지 비우기
+        localStorage.clear();
+
+        // 초기 데이터로 강제 할당 (새로고침 전 안전장치)
+        routines = [
+            { id: 1, title: "에임랩 15분 플레이 하기", currentSec: 0, completed: false, useTime: true, useCount: false, useMatch: false, goalH: 0, goalM: 15, goalS: 0, goalCount: 0, goalMatch: 0 }
+        ];
+
+        // 페이지 새로고침
+        location.replace(location.href); 
+    }
+}
+
 
     window.onload = () => {
         setTimeout(() => { document.getElementById('loading-screen').style.opacity = '0'; setTimeout(() => { document.getElementById('loading-screen').style.display = 'none'; document.getElementById('main-container').classList.add('show'); }, 500); }, 1000);
