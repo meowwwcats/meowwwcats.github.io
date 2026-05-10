@@ -8,7 +8,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Noto+Sans+KR:wght@300;700;900&display=swap');
 
-        /* 모바일 차단 */
         #mobile-block {
             display: none;
             position: fixed;
@@ -280,7 +279,7 @@
             background: rgba(255, 70, 85, 0.1);
         }
 
-        /* 설정 패널 - 격리 강화 */
+        
         .settings-panel {
             display: none;
             margin-top: 20px;
@@ -328,7 +327,7 @@
             background: rgba(255, 70, 85, 0.2) !important;
         }
 
-        /* 시간/횟수 선택 섹션 */
+       
         .control-section {
             display: none;
         }
@@ -353,7 +352,7 @@
             border: 1px solid #222;
         }
 
-        /* 버튼 위치: 왼쪽(+), 오른쪽(-) */
+        
         .step-btn {
             width: 38px;
             height: 38px;
@@ -620,16 +619,10 @@
                 intervals[t.id] = setInterval(() => {
                     const now = Date.now();
                     t.currentSec = Math.floor((now - startTime) / 1000);
-
                     const el = document.getElementById(`timer-${t.id}`);
                     if (el) el.innerText = formatTime(t.currentSec);
-
                     updateTotal();
-
-                    // --- 추가된 부분: 1초마다 자동 저장 (데이터 유실 방지) ---
                     if (t.currentSec % 1 === 0) save();
-                    // ----------------------------------------------------
-
                     if (t.useTime) {
                         const goal = (t.goalH * 3600) + (t.goalM * 60) + t.goalS;
                         if (t.currentSec >= goal && goal > 0) completeTask(i);
@@ -660,30 +653,30 @@
         }
 
         function updateTitleRealtime(i, val) { routines[i].title = val; document.getElementById(`title-display-${i}`).innerText = val; save(); }
-        function deleteTask(i) { if (confirm("삭제하시겠습니까?")) { if (intervals[routines[i].id]) clearInterval(intervals[routines[i].id]); routines.splice(i, 1); openPanelIdx = null; render(); } }
+        function deleteTask(i) { if (confirm("삭제 하시겠습니까?")) { if (intervals[routines[i].id]) clearInterval(intervals[routines[i].id]); routines.splice(i, 1); openPanelIdx = null; render(); } }
         function completeTask(i) { const t = routines[i]; if (intervals[t.id]) { clearInterval(intervals[t.id]); delete intervals[t.id]; } t.completed = true; playCuteSound(); render(); }
         function toggleSettings(i) { openPanelIdx = (openPanelIdx === i) ? null : i; render(); }
         function adj(i, key, val) { routines[i][key] = Math.max(0, (routines[i][key] || 0) + val); if ((key === 'goalM' || key === 'goalS') && routines[i][key] >= 60) routines[i][key] = 59; render(); }
         function inputAdj(i, key, val) { routines[i][key] = Math.max(0, parseInt(val) || 0); render(); }
         function updateTotal() { const total = routines.reduce((acc, curr) => acc + curr.currentSec, 0); document.getElementById('total-display').innerText = formatTime(total); }
-        function resetProgress() { if (!confirm("초기화할까요?")) return; Object.keys(intervals).forEach(id => clearInterval(intervals[id])); intervals = {}; routines.forEach(r => { r.currentSec = 0; r.completed = false; }); openPanelIdx = null; render(); }
+        function resetProgress() { if (!confirm("다시시작 하겠습니까?")) return; Object.keys(intervals).forEach(id => clearInterval(intervals[id])); intervals = {}; routines.forEach(r => { r.currentSec = 0; r.completed = false; }); openPanelIdx = null; render(); }
         function factoryReset() {
             if (confirm("모든 데이터가 삭제되고 초기 상태로 돌아갑니다. 진행하시겠습니까?")) {
-                // 타이머 중지
+                
                 for (let id in intervals) {
                     clearInterval(intervals[id]);
                 }
                 intervals = {};
 
-                // 스토리지 비우기
+                
                 localStorage.clear();
 
-                // 초기 데이터로 강제 할당 (새로고침 전 안전장치)
+                
                 routines = [
                     { id: 1, title: "에임랩 15분 플레이 하기", currentSec: 0, completed: false, useTime: true, useCount: false, useMatch: false, goalH: 0, goalM: 15, goalS: 0, goalCount: 0, goalMatch: 0 }
                 ];
 
-                // 페이지 새로고침
+                
                 location.replace(location.href);
             }
         }
@@ -692,15 +685,15 @@
             let val = parseInt(el.value) || 0;
 
             if (key === 'goalH') {
-                if (val > 23) val = 23; // 24시간 이상 입력 시 23으로 고정
+                if (val > 23) val = 23;
             } else {
-                if (val > 59) val = 59; // 60분/초 이상 입력 시 59로 고정
+                if (val > 59) val = 59;
             }
 
-            if (val < 0) val = 0; // 음수 입력 방지
+            if (val < 0) val = 0;
 
             routines[i][key] = val;
-            render(); // 화면 갱신해서 올바른 값으로 보여줌
+            render(); 
         }
 
 
